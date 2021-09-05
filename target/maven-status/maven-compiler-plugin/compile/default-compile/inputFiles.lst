@@ -1,0 +1,15 @@
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/FlowContext.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/Decider.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/decider/NotDecider.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/task/CompositionTask.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/exception/NoTasksException.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/decider/OrDecider.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/Flow.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/exception/NoDecidersException.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/exception/BaseException.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/exception/ConfigurationException.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/FlowFactory.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/Task.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/flow/SimpleFlow.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/decider/CompositeDecider.java
+/home/mjackson/personal/flow/src/main/java/org/dorkmaster/flow/decider/AndDecider.java

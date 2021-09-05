@@ -1,0 +1,14 @@
+imports:
+  - flowFactoryDefaults
+
+class:
+  decider:
+    true: org.dorkmaster.flow.tests.util.TrueDecider
+    false: org.dorkmaster.flow.tests.util.TrueDecider
+  task:
+    noop: org.dorkmaster.flow.tests.util.NoopTask
+
+flow:
+  - simple:
+      decider: true
+      task: noop

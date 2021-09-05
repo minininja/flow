@@ -1,0 +1,8 @@
+class:
+  flow:
+    simple: org.dorkmaster.flow.SimpleFlow
+  decider:
+    - and: org.dorkmaster.flow.decider.AndDecider
+    - or: org.dorkmaster.flow.decider.AndDecider
+    - not: org.dorkmaster.flow.decider.AndDecider
+
