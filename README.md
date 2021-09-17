@@ -14,7 +14,7 @@ Sample programmatic construction
 FlowContext ctx = new SimpleFlow()
     .setDecider(Deciders.t)
     .setTask(Tasks.t)
-    .execute(ctx);
+    .execute(new FlowContext());
 ```
 
 Alternatively yaml can be provided and used along with a factory.  In the sample yaml 
