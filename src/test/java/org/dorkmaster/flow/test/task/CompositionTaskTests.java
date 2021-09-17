@@ -1,7 +1,8 @@
-package org.dorkmaster.flow.impl.task;
+package org.dorkmaster.flow.test.task;
 
 import org.dorkmaster.flow.FlowContext;
 import org.dorkmaster.flow.exception.NoTasksException;
+import org.dorkmaster.flow.impl.task.CompositeTask;
 import org.dorkmaster.flow.test.util.Tasks;
 import org.junit.Assert;
 import org.junit.Test;

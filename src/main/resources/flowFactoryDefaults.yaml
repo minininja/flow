@@ -1,10 +1,11 @@
 class:
   flow:
-    simple: org.dorkmaster.flow.impl.SimpleFlow
+    simple: org.dorkmaster.flow.impl.flow.SimpleFlow
   decider:
     and: org.dorkmaster.flow.impl.decider.AndDecider
     or: org.dorkmaster.flow.impl.decider.OrDecider
     not: org.dorkmaster.flow.impl.decider.NotDecider
   task:
     compositeTask: org.dorkmaster.flow.impl.task.CompositeTask
+    flowTask: org.dorkmaster.flow.impl.task.FlowTask
 

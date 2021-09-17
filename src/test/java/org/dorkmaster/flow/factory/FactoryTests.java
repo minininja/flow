@@ -29,4 +29,9 @@ public class FactoryTests {
         Assert.assertNotNull(result);
         Assert.assertNull(result.get(MarkerTask.MARKER));
     }
+
+    @Test
+    public void testFlowTask() {
+
+    }
 }

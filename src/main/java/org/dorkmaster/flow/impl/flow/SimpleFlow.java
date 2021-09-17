@@ -1,4 +1,4 @@
-package org.dorkmaster.flow.impl;
+package org.dorkmaster.flow.impl.flow;
 
 import org.dorkmaster.flow.Decider;
 import org.dorkmaster.flow.Flow;

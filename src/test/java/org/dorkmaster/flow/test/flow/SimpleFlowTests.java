@@ -1,7 +1,7 @@
 package org.dorkmaster.flow.test.flow;
 
 import org.dorkmaster.flow.FlowContext;
-import org.dorkmaster.flow.impl.SimpleFlow;
+import org.dorkmaster.flow.impl.flow.SimpleFlow;
 import org.dorkmaster.flow.test.util.Deciders;
 import org.dorkmaster.flow.test.util.Tasks;
 import org.junit.Assert;
