@@ -3,12 +3,28 @@ imports:
 
 class:
   decider:
-    true: org.dorkmaster.flow.tests.util.TrueDecider
-    false: org.dorkmaster.flow.tests.util.TrueDecider
+    true: org.dorkmaster.flow.test.util.TrueDecider
   task:
-    noop: org.dorkmaster.flow.tests.util.NoopTask
+    marker: org.dorkmaster.flow.test.util.MarkerTask
 
-flow:
-  - simple:
-      decider: true
-      task: noop
+flows:
+  trivial:
+    flow: simple
+    decider: true
+    task: marker
+  notTrivial:
+    flow: simple
+    decider:
+      composite: not
+      children:
+        - decider: true
+    task: marker
+  compositeTask:
+    flow: simple
+    decider: true
+    task:
+      compositeTask:
+        composite: compositeTask
+        children:
+          - task: marker
+

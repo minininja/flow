@@ -1,14 +1,86 @@
 package org.dorkmaster.flow.factory
 
+
+import org.dorkmaster.flow.Decider
 import org.dorkmaster.flow.Flow
+import org.dorkmaster.flow.Task
+import org.dorkmaster.flow.exception.DuplicateClassException
 import org.dorkmaster.flow.exception.DuplicateFlowException
 import org.dorkmaster.flow.exception.ResourceNotFoundException
 import org.yaml.snakeyaml.Yaml
 
 class Factory implements FlowFactory {
 
-    def readFile(resource) {
+    static Yaml parser = new Yaml()
+    def clazzs = [flow:[:], decider: [:], task: [:]]
+    def flows = [:]
 
+    @Override
+    Factory load(String resource) {
+        def config = parser.load(readFile(resource))
+
+        if (config.imports) {
+            config.imports.each { imp ->
+                load(imp)
+            }
+        }
+
+        config["class"].each { type, items ->
+            items.each { name, clz ->
+                if (clazzs?."${type}"?."${name}") {
+                    throw new DuplicateClassException("${type} - ${name} - ${clz}")
+                }
+                clazzs."${type}"."${name}" = Class.forName(clz).getConstructor(null)
+            }
+        }
+
+        config?.flows?.each { name, definition ->
+            if (flows."${name}") {
+                throw new DuplicateFlowException(name)
+            }
+            flows."${name}" = definition
+        }
+
+        return this
+    }
+
+    @Override
+    Flow constructFlow(String name) {
+        def defintion = flows."${name}"
+        def flow = (Flow) clazzs.flow."${defintion.flow}".newInstance()
+        def decider = (Decider) constructDecider(defintion)
+        def task = (Task) constructTask(defintion)
+        flow.setDecider(decider).setTask(task)
+    }
+
+    def constructDecider(definition) {
+        constructor("decider", definition)
+    }
+
+    def constructTask(definition) {
+        constructor("task", definition)
+    }
+
+    def constructor(type, definition) {
+        def d = definition."${type}"
+        def clazz = clazzs."${type}"."${d}"
+        // simple class
+        if (clazz) {
+            clazz = clazzs."${type}"."${d}".newInstance()
+        }
+        // not a simple class, but a composite
+        else {
+            clazz = clazzs."${type}"
+            clazz = clazz."${d.composite}"
+            clazz = clazz.newInstance()
+            d.children.each { child ->
+                clazz.addChild(constructDecider(child))
+            }
+        }
+        clazz
+    }
+
+    def readFile(resource) {
         def res = this.getClass().getResourceAsStream("/${resource.replaceAll(/\./, "/")}.yaml")
         if (res) {
             StringBuilder sb = new StringBuilder()
@@ -18,65 +90,5 @@ class Factory implements FlowFactory {
             return sb.toString()
         }
         throw new ResourceNotFoundException(resource)
-    }
-
-    def config
-
-    @Override
-    Factory load(String resource) {
-        Yaml parser = new Yaml()
-        config = parser.load(readFile(resource))
-
-        if (!config["class"].flow)
-            config["class"].flow = [:]
-        if (!config["class"].flow)
-            config["class"].decider = [:]
-        if (!config["class"].flow)
-            config["class"].task = [:]
-
-        processImports(config)
-
-        return this
-    }
-
-
-    @Override
-    Flow constructFlow(String name) {
-
-    }
-
-    def build(String type, String name) {
-        def clzName = config["class"]["${type}"]["${name}"]
-        def clz = Class.forName(clzName)
-        clz.getConstructors()[0].newInstance(null)
-    }
-
-    def processImports(config) {
-        if (config.imports) {
-            config.imports.each { imp ->
-                def impConfig = load(imp).config
-                // recurse
-                if (impConfig.imports) {
-                    impConfig = processImports(impConfig)
-                }
-
-                // add the classes
-                impConfig["class"].decider.each { clz ->
-                    config["class"].decider << clz
-                }
-                impConfig["class"].task.each { clz ->
-                    config["class"].task << clz
-                }
-                impConfig["class"].flow.each { clz ->
-                    config["class"].flow << clz
-                }
-
-                impConfig.flow.each { flow ->
-                    if (config.flow['${flow}']) {
-                        throw new DuplicateFlowException(flow)
-                    }
-                }
-            }
-        }
     }
 }
