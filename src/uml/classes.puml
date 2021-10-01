@@ -1,0 +1,48 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+class FlowContext {
+    FlowContext set(String name, Object obj)
+    Object get(String name)
+}
+
+interface Decider {
+    boolean decide(FlowContext context)
+}
+
+interface Task {
+    FlowContext execute(FlowContext context)
+}
+
+interface Flow {
+    Flow setDecider(Decider d)
+    Flow setTask(Task t)
+    FlowContext execute(FlowContext context)
+}
+
+Task <|-- Flow
+abstract class CompositeDecider {
+    CompositeDecider addDedicer(Decider d)
+}
+Decider <|-- CompositeDecider
+
+class AndDecider
+class NotDecider
+class OrDecider
+
+Decider <|-- NotDecider
+CompositeDecider <|-- AndDecider
+CompositeDecider <|-- OrDecider
+
+class CompositionTask {
+    CompositionTask addTask(Task t)
+}
+
+Task <|-- CompositionTask
+
+class FlowFactory {
+    FlowFactory load(String resource);
+    Flow constructFlow(String name);
+}
+
+@enduml

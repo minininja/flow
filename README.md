@@ -1,12 +1,18 @@
 # flow
 
 This is a simple flow engine that uses a yaml based declaration syntax 
-to create application flows.  All flows consist of two pieces, a decider 
-and a task.  A decider returns a simple boolean (true or false) which 
-controls if a task is going to be executed or not.
+to create application flows.  
 
-Flows can be either constructed programmatically or via a factory utilizing 
-a simple yaml based syntax.
+There are 3 basic interfaces:
+
+1. Flow - a flow conditionally execute a task based on the outcome of a Decider
+2. Decider - evaluates the FlowContext return a boolean go/no go decision.
+3. Task - work to be performed if the Flow is executed.
+
+There are several provided logical constructs to allow for composition of several 
+Deciders or to allow multiple tasks to be executed as a single flow.  Additionally,
+the Flow interface itself extends the Task interface which allows a Flow to be used
+as a Task for a parent Flow.  
 
 Sample programmatic construction
 
@@ -17,34 +23,60 @@ FlowContext ctx = new SimpleFlow()
     .execute(new FlowContext());
 ```
 
-Alternatively yaml can be provided and used along with a factory.  In the sample yaml 
-we declare the classes that can be used to create flows and then a sample flow using
-a composite task.
+Alternatively a YAML file can be provided and used along with a factory.  The YAML defines
+two things, the claases to be use for Flows, Deciders and Tasks, and the flows themselves.  
+YAML files may import any number of additiona YAML files.  An example is shown below using
+the default base YAML file as an import.
+
+The factory supports declarative definition of flows using the definitions and supports
+
+* Creation of singular and composite deciders and tasks.  
+* Injection of child Flows as tasks within parent flows, although not by name currently.
 
 ```
-class:
-    flow:
-        simple: org.dorkmaster.flow.impl.flow.SimpleFlow
-    decider:
-        true: org.dorkmaster.flow.test.util.TrueDecider
-    task:
-        compositeTask: org.dorkmaster.flow.impl.task.CompositeTask
-        marker: org.dorkmaster.flow.test.util.MarkerTask
+imports:
+  - flowFactoryDefaults 
 
-flow:
-    compositeTask:
-        flow: simple
-            decider: true
-        task:
-            compositeTask:
-                composite: compositeTask
-                children:
-                    - task: marker
+class:
+  decider:
+    true: org.dorkmaster.flow.test.util.TrueDecider
+    false: org.dorkmaster.flow.test.util.FalseDecider
+  task:
+    marker: org.dorkmaster.flow.test.util.MarkerTask
+    marker2: org.dorkmaster.flow.test.util.MarkerTask2
+
+flows:
+  trivial:
+    flow: simple
+    decider: true
+    task: marker
+
+  compositeDecider:
+    flow: simple
+    decider:
+      composite: not
+      children:
+        - decider: true
+    task: marker
+
+  compositeTaskWithChildFlow:
+    flow: simple
+    decider: true
+    task:
+      composite: compositeTask
+      children:
+        - flow: simple
+          decider: false
+          task: marker2
+        - task: marker
+
 ```
 
 Constructing the flow defined in the sample is simple:
 
 ```
-Flow flow = factory.constructFlow("trivial");
+Flow flow = new Factory()
+    .load("testFactory")
+    .constructFlow("compositeTaskWithChildFlow");
 ```
 
