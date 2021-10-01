@@ -1,7 +1,6 @@
 package org.dorkmaster.flow;
 
-public interface Flow {
+public interface Flow extends Task{
     Flow setDecider(Decider d);
     Flow setTask(Task t);
-    FlowContext execute(FlowContext ctx);
 }

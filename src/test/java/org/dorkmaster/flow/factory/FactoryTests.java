@@ -3,6 +3,7 @@ package org.dorkmaster.flow.factory;
 import org.dorkmaster.flow.Flow;
 import org.dorkmaster.flow.FlowContext;
 import org.dorkmaster.flow.test.util.MarkerTask;
+import org.dorkmaster.flow.test.util.MarkerTask2;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -31,7 +32,13 @@ public class FactoryTests {
     }
 
     @Test
-    public void testFlowTask() {
+    public void testCompositeFlow() {
+        Flow flow = factory.constructFlow("compositeFlowTask");
+        Assert.assertNotNull(flow);
 
+        FlowContext result = flow.execute(new FlowContext());
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.get(MarkerTask.MARKER));
+        Assert.assertNull(result.get(MarkerTask2.MARKER));
     }
 }

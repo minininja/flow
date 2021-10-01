@@ -1,22 +1,26 @@
 package org.dorkmaster.flow.factory
 
-
+import org.dorkmaster.flow.Composite
 import org.dorkmaster.flow.Decider
 import org.dorkmaster.flow.Flow
 import org.dorkmaster.flow.Task
 import org.dorkmaster.flow.exception.DuplicateClassException
 import org.dorkmaster.flow.exception.DuplicateFlowException
+import org.dorkmaster.flow.exception.MalformedYamlException
 import org.dorkmaster.flow.exception.ResourceNotFoundException
+import org.dorkmaster.flow.impl.task.CompositeTask
 import org.yaml.snakeyaml.Yaml
+import org.slf4j.*
 
 class Factory implements FlowFactory {
 
     static Yaml parser = new Yaml()
-    def clazzs = [flow:[:], decider: [:], task: [:]]
+    Logger logger = LoggerFactory.getLogger(this.getClass())
+    def clazzs = [flow: [:], decider: [:], task: [:]]
     def flows = [:]
 
     @Override
-    Factory load(String resource) {
+    FlowFactory load(String resource) {
         def config = parser.load(readFile(resource))
 
         if (config.imports) {
@@ -46,38 +50,76 @@ class Factory implements FlowFactory {
 
     @Override
     Flow constructFlow(String name) {
-        def defintion = flows."${name}"
-        def flow = (Flow) clazzs.flow."${defintion.flow}".newInstance()
-        def decider = (Decider) constructDecider(defintion)
-        def task = (Task) constructTask(defintion)
-        flow.setDecider(decider).setTask(task)
+        try {
+            def definition = flows."${name}"
+            logger.debug("root: definition: {}", definition)
+            return constructFlowFromDefinition(definition)
+        } catch (NullPointerException e) {
+            throw new MalformedYamlException("unable to construct ${definition}", e)
+        }
     }
 
-    def constructDecider(definition) {
-        constructor("decider", definition)
+    Flow constructFlowFromDefinition(definition) {
+        logger.debug("flow: definition {}", definition)
+
+        if (definition.flow) {
+            def flow = (Flow) constructor("flow", definition.flow)
+            def decider = constructDecider(definition.decider)
+            def task = constructTask(definition.task)
+            return flow.setDecider(decider).setTask(task)
+        } else {
+            throw new MalformedYamlException()
+        }
     }
 
-    def constructTask(definition) {
-        constructor("task", definition)
+    Task constructTask(definition) {
+        logger.debug("task: definition {}", definition)
+
+        if (definition instanceof String)   {
+            return (Task) constructor("task", definition)
+        } else if (definition.composite) {
+            def task = (CompositeTask) constructor("task", definition.composite)
+            definition.children.each { child ->
+                task.addChild(constructTask(child))
+            }
+            return task
+        } else if (definition.flow) {
+            return (Task) constructFlowFromDefinition(definition)
+        } else if (definition.task) {
+            // this needs to be last otherwise it'll interfere with creating child flows
+            return (Task) constructor("task", definition.task)
+        } else {
+            throw new MalformedYamlException()
+        }
+    }
+
+    Decider constructDecider(definition) {
+        logger.debug("decider: definition {}", definition)
+
+        if (definition instanceof Map) {
+            if (definition.composite) {
+                def compositeDecider = (Composite) constructor("decider", definition.composite)
+                definition.children.each { child ->
+                    compositeDecider.addChild((Decider) constructDecider(child))
+                }
+                return compositeDecider
+            } else if (definition.decider) {
+                return (Decider) constructor("decider", definition.decider)
+            }
+        } else {
+            return (Decider) constructor("decider", definition)
+        }
+        throw new MalformedYamlException("grr")
     }
 
     def constructor(type, definition) {
-        def d = definition."${type}"
-        def clazz = clazzs."${type}"."${d}"
-        // simple class
-        if (clazz) {
-            clazz = clazzs."${type}"."${d}".newInstance()
+        def d = definition
+        try {
+            def clazz = clazzs."${type}"."${d}"
+            return clazzs."${type}"."${d}".newInstance()
+        } catch(NullPointerException e) {
+            throw new MalformedYamlException("unable to construct ${d}", e)
         }
-        // not a simple class, but a composite
-        else {
-            clazz = clazzs."${type}"
-            clazz = clazz."${d.composite}"
-            clazz = clazz.newInstance()
-            d.children.each { child ->
-                clazz.addChild(constructDecider(child))
-            }
-        }
-        clazz
     }
 
     def readFile(resource) {

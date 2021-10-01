@@ -4,14 +4,17 @@ imports:
 class:
   decider:
     true: org.dorkmaster.flow.test.util.TrueDecider
+    false: org.dorkmaster.flow.test.util.FalseDecider
   task:
     marker: org.dorkmaster.flow.test.util.MarkerTask
+    marker2: org.dorkmaster.flow.test.util.MarkerTask2
 
 flows:
   trivial:
     flow: simple
     decider: true
     task: marker
+
   notTrivial:
     flow: simple
     decider:
@@ -19,6 +22,7 @@ flows:
       children:
         - decider: true
     task: marker
+
   compositeTask:
     flow: simple
     decider: true
@@ -27,4 +31,17 @@ flows:
         composite: compositeTask
         children:
           - task: marker
+
+  compositeFlowTask:
+    flow: simple
+    decider: true
+    task:
+      composite: compositeTask
+      children:
+        - flow: simple
+          decider: false
+          task: marker2
+        - task: marker
+
+
 
