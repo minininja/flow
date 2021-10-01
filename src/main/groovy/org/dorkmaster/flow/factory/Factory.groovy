@@ -6,6 +6,7 @@ import org.dorkmaster.flow.Flow
 import org.dorkmaster.flow.Task
 import org.dorkmaster.flow.exception.DuplicateClassException
 import org.dorkmaster.flow.exception.DuplicateFlowException
+import org.dorkmaster.flow.exception.FlowNotFoundException
 import org.dorkmaster.flow.exception.MalformedYamlException
 import org.dorkmaster.flow.exception.ResourceNotFoundException
 import org.dorkmaster.flow.impl.task.CompositeTask
@@ -16,19 +17,17 @@ class Factory implements FlowFactory {
 
     static Yaml parser = new Yaml()
     Logger logger = LoggerFactory.getLogger(this.getClass())
-    def clazzs = [flow: [:], decider: [:], task: [:]]
-    def flows = [:]
+    Map clazzs = [flow: [:], decider: [:], task: [:]]
+    Map flows = [:]
 
     @Override
     FlowFactory load(String resource) {
         def config = parser.load(readFile(resource))
-
         if (config.imports) {
             config.imports.each { imp ->
                 load(imp)
             }
         }
-
         config["class"].each { type, items ->
             items.each { name, clz ->
                 if (clazzs?."${type}"?."${name}") {
@@ -37,44 +36,40 @@ class Factory implements FlowFactory {
                 clazzs."${type}"."${name}" = Class.forName(clz).getConstructor(null)
             }
         }
-
         config?.flows?.each { name, definition ->
             if (flows."${name}") {
                 throw new DuplicateFlowException(name)
             }
             flows."${name}" = definition
         }
-
         return this
     }
 
     @Override
     Flow constructFlow(String name) {
-        try {
-            def definition = flows."${name}"
-            logger.debug("root: definition: {}", definition)
+        def definition = flows."${name}"
+        logger.debug("root: definition: {}", definition)
+        if (definition) {
             return constructFlowFromDefinition(definition)
-        } catch (NullPointerException e) {
-            throw new MalformedYamlException("unable to construct ${definition}", e)
+        } else {
+            throw new FlowNotFoundException("Flow '${name}' does not exist")
         }
     }
 
     Flow constructFlowFromDefinition(definition) {
         logger.debug("flow: definition {}", definition)
-
         if (definition.flow) {
             def flow = (Flow) constructor("flow", definition.flow)
             def decider = constructDecider(definition.decider)
             def task = constructTask(definition.task)
             return flow.setDecider(decider).setTask(task)
         } else {
-            throw new MalformedYamlException()
+            throw new MalformedYamlException("could not create flow '${definition}'")
         }
     }
 
     Task constructTask(definition) {
         logger.debug("task: definition {}", definition)
-
         if (definition instanceof String)   {
             return (Task) constructor("task", definition)
         } else if (definition.composite) {
@@ -89,13 +84,12 @@ class Factory implements FlowFactory {
             // this needs to be last otherwise it'll interfere with creating child flows
             return (Task) constructor("task", definition.task)
         } else {
-            throw new MalformedYamlException()
+            throw new MalformedYamlException("could not create task '${definition}'")
         }
     }
 
     Decider constructDecider(definition) {
         logger.debug("decider: definition {}", definition)
-
         if (definition instanceof Map) {
             if (definition.composite) {
                 def compositeDecider = (Composite) constructor("decider", definition.composite)
@@ -113,12 +107,12 @@ class Factory implements FlowFactory {
     }
 
     def constructor(type, definition) {
-        def d = definition
+        logger.debug("construtor: {} {}", type, definition)
         try {
-            def clazz = clazzs."${type}"."${d}"
-            return clazzs."${type}"."${d}".newInstance()
+            def clazz = clazzs."${type}"."${definition}"
+            return clazzs."${type}"."${definition}".newInstance()
         } catch(NullPointerException e) {
-            throw new MalformedYamlException("unable to construct ${d}", e)
+            throw new MalformedYamlException("unable to construct ${definition}", e)
         }
     }
 
