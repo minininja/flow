@@ -1,9 +1,9 @@
 package org.dorkmaster.flow.impl.decider;
 
-import org.dorkmaster.flow.Composite;
-import org.dorkmaster.flow.Decider;
-import org.dorkmaster.flow.FlowContext;
 import org.dorkmaster.flow.exception.NoDecidersException;
+import org.dorkmaster.flow.impl.Composite;
+import org.dorkmaster.flow.impl.Decider;
+import org.dorkmaster.flow.impl.FlowContext;
 
 import java.util.LinkedList;
 import java.util.List;

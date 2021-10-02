@@ -1,0 +1,6 @@
+class:
+  decider:
+    true: org.dorkmaster.flow.common.decider.TrueDecider
+    false: org.dorkmaster.flow.common.decider.FalseDecider
+  task:
+    marker: org.dorkmaster.flow.common.task.MarkerTask

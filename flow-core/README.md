@@ -39,7 +39,7 @@ imports:
 
 class:
   decider:
-    true: org.dorkmaster.flow.test.factory.SpringTrueDecider
+    true: SpringTrueDecider
     false: org.dorkmaster.flow.test.factory.FalseDecider
   task:
     marker: org.dorkmaster.flow.test.factory.MarkerTask

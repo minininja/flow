@@ -1,10 +1,5 @@
 package org.dorkmaster.flow.factory;
 
-import org.dorkmaster.flow.Task;
-
-import java.util.HashMap;
-import java.util.Map;
-
 public enum Type {
     FLOW("flow"), DECIDER("decider"), TASK("task");
 

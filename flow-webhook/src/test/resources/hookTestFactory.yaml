@@ -1,0 +1,9 @@
+imports:
+  - flowFactoryDefaults
+  - flowCommons
+
+flows:
+  trivial:
+    flow: simple
+    decider: true
+    task: marker

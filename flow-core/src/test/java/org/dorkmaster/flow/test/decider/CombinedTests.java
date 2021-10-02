@@ -1,6 +1,6 @@
 package org.dorkmaster.flow.test.decider;
 
-import org.dorkmaster.flow.FlowContext;
+import org.dorkmaster.flow.impl.FlowContext;
 import org.dorkmaster.flow.impl.decider.AndDecider;
 import org.dorkmaster.flow.impl.decider.NotDecider;
 import org.dorkmaster.flow.impl.decider.OrDecider;

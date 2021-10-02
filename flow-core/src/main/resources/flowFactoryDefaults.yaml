@@ -7,5 +7,4 @@ class:
     not: org.dorkmaster.flow.impl.decider.NotDecider
   task:
     compositeTask: org.dorkmaster.flow.impl.task.CompositeTask
-    flowTask: org.dorkmaster.flow.impl.task.FlowTask
 
