@@ -1,0 +1,20 @@
+imports:
+  - flowFactoryDefaults
+
+class:
+  decider:
+    false: org.dorkmaster.flow.test.factory.NonSpringFalseDecider
+
+flows:
+  springFlow:
+    flow: springFlow
+    decider: true
+    task: marker
+
+  springFlow2:
+    flow: springFlow
+    decider:
+      composite: not
+      children:
+        - decider: false
+    task: marker

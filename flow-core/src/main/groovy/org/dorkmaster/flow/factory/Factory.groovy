@@ -13,12 +13,16 @@ import org.dorkmaster.flow.impl.task.CompositeTask
 import org.yaml.snakeyaml.Yaml
 import org.slf4j.*
 
+import static org.dorkmaster.flow.factory.Type.DECIDER
+import static org.dorkmaster.flow.factory.Type.FLOW
+import static org.dorkmaster.flow.factory.Type.TASK
+
 class Factory implements FlowFactory {
 
     static Yaml parser = new Yaml()
     Logger logger = LoggerFactory.getLogger(this.getClass())
-    Map clazzs = [flow: [:], decider: [:], task: [:]]
     Map flows = [:]
+    Resolver resolver = new SimpleResolver() // default resolver
 
     @Override
     FlowFactory load(String resource) {
@@ -28,14 +32,14 @@ class Factory implements FlowFactory {
                 load(imp)
             }
         }
+
         config["class"].each { type, items ->
+            def t = Type.valueOf(type.toUpperCase())
             items.each { name, clz ->
-                if (clazzs?."${type}"?."${name}") {
-                    throw new DuplicateClassException("${type} - ${name} - ${clz}")
-                }
-                clazzs."${type}"."${name}" = Class.forName(clz).getConstructor(null)
+                resolver.add(t, "${name}", clz)
             }
         }
+
         config?.flows?.each { name, definition ->
             if (flows."${name}") {
                 throw new DuplicateFlowException(name)
@@ -59,7 +63,7 @@ class Factory implements FlowFactory {
     Flow constructFlowFromDefinition(definition) {
         logger.debug("flow: definition {}", definition)
         if (definition.flow) {
-            def flow = (Flow) constructor("flow", definition.flow)
+            def flow = (Flow) resolver.create(FLOW, definition.flow)
             def decider = constructDecider(definition.decider)
             def task = constructTask(definition.task)
             return flow.setDecider(decider).setTask(task)
@@ -71,9 +75,9 @@ class Factory implements FlowFactory {
     Task constructTask(definition) {
         logger.debug("task: definition {}", definition)
         if (definition instanceof String)   {
-            return (Task) constructor("task", definition)
+            return (Task) resolver.create(TASK, definition)
         } else if (definition.composite) {
-            def task = (CompositeTask) constructor("task", definition.composite)
+            def task = (CompositeTask) resolver.create(TASK, definition.composite)
             definition.children.each { child ->
                 task.addChild(constructTask(child))
             }
@@ -82,7 +86,7 @@ class Factory implements FlowFactory {
             return (Task) constructFlowFromDefinition(definition)
         } else if (definition.task) {
             // this needs to be last otherwise it'll interfere with creating child flows
-            return (Task) constructor("task", definition.task)
+            return (Task) resolver.create(TASK, definition.task)
         } else {
             throw new MalformedYamlException("could not create task '${definition}'")
         }
@@ -91,29 +95,19 @@ class Factory implements FlowFactory {
     Decider constructDecider(definition) {
         logger.debug("decider: definition {}", definition)
         if (definition instanceof Map) {
-            if (definition.composite) {
-                def compositeDecider = (Composite) constructor("decider", definition.composite)
+            if (null != definition.composite) {
+                def compositeDecider = (Composite) resolver.create(DECIDER, definition.composite)
                 definition.children.each { child ->
                     compositeDecider.addChild((Decider) constructDecider(child))
                 }
                 return compositeDecider
-            } else if (definition.decider) {
-                return (Decider) constructor("decider", definition.decider)
+            } else if (null != definition.decider) {
+                return (Decider) resolver.create(DECIDER, "${definition.decider}")
             }
         } else {
-            return (Decider) constructor("decider", definition)
+            return (Decider) resolver.create(DECIDER, "${definition}")
         }
         throw new MalformedYamlException("grr")
-    }
-
-    def constructor(type, definition) {
-        logger.debug("construtor: {} {}", type, definition)
-        try {
-            def clazz = clazzs."${type}"."${definition}"
-            return clazzs."${type}"."${definition}".newInstance()
-        } catch(NullPointerException e) {
-            throw new MalformedYamlException("unable to construct ${definition}", e)
-        }
     }
 
     def readFile(resource) {
