@@ -1,7 +1,7 @@
 package org.dorkmaster.flow.spring.test.util;
 
-import org.dorkmaster.flow.impl.FlowContext;
-import org.dorkmaster.flow.impl.Task;
+import org.dorkmaster.flow.FlowContext;
+import org.dorkmaster.flow.Task;
 import org.springframework.stereotype.Component;
 
 @Component(value = "marker")

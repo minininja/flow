@@ -1,11 +1,11 @@
 package org.dorkmaster.flow.spring.factory
 
+import org.dorkmaster.flow.Decider
+import org.dorkmaster.flow.Flow
+import org.dorkmaster.flow.Task
 import org.dorkmaster.flow.factory.Resolver
 import org.dorkmaster.flow.factory.SimpleResolver
 import org.dorkmaster.flow.factory.Type
-import org.dorkmaster.flow.impl.Decider
-import org.dorkmaster.flow.impl.Flow
-import org.dorkmaster.flow.impl.Task
 import org.dorkmaster.flow.spring.exception.UndefinedBeanException
 import org.springframework.beans.factory.BeanFactory
 
@@ -27,7 +27,7 @@ class SpringBeanResolver extends SimpleResolver implements Resolver {
     Object create(Type type, String name) {
         if (beanFactory.containsBean(name)) {
             Object bean = beanFactory.getBean(name)
-            if (bean instanceof Flow || bean instanceof Decider || bean instanceof Task) {
+            if (bean instanceof Decider || bean instanceof Task) {
                 return bean
             }
         }

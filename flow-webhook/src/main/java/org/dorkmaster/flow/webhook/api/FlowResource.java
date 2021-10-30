@@ -1,8 +1,8 @@
 package org.dorkmaster.flow.webhook.api;
 
 import org.dorkmaster.flow.factory.FlowFactory;
-import org.dorkmaster.flow.impl.Flow;
-import org.dorkmaster.flow.impl.FlowContext;
+import org.dorkmaster.flow.Flow;
+import org.dorkmaster.flow.FlowContext;
 import org.dorkmaster.flow.webhook.model.FlowRequest;
 import org.dorkmaster.flow.webhook.model.FlowResponse;
 import org.dorkmaster.flow.webhook.model.HookContext;

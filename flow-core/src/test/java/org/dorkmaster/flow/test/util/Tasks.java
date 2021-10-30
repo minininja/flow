@@ -1,7 +1,7 @@
 package org.dorkmaster.flow.test.util;
 
-import org.dorkmaster.flow.impl.FlowContext;
-import org.dorkmaster.flow.impl.Task;
+import org.dorkmaster.flow.FlowContext;
+import org.dorkmaster.flow.Task;
 
 public class Tasks {
     public static final String T = "true";

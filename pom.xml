@@ -14,6 +14,7 @@
     </properties>
 
     <modules>
+        <module>flow-api</module>
         <module>flow-core</module>
         <module>flow-common</module>
         <module>flow-spring</module>

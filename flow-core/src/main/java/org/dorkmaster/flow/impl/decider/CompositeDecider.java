@@ -1,9 +1,10 @@
 package org.dorkmaster.flow.impl.decider;
 
+import org.dorkmaster.flow.Composite;
+import org.dorkmaster.flow.Decider;
+import org.dorkmaster.flow.FlowContext;
+import org.dorkmaster.flow.exception.MisconfiguredDecidersException;
 import org.dorkmaster.flow.exception.NoDecidersException;
-import org.dorkmaster.flow.impl.Composite;
-import org.dorkmaster.flow.impl.Decider;
-import org.dorkmaster.flow.impl.FlowContext;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -16,10 +17,18 @@ public abstract class CompositeDecider implements Composite<Decider>, Decider {
         return this;
     }
 
-    public boolean decide(FlowContext context) {
+    protected void validate() {
         if (deciders.isEmpty()) {
             throw new NoDecidersException();
         }
-        return false; // doesn't matter what we return
     }
+
+    protected void validate(int expected) {
+        validate();
+        if (expected != deciders.size()) {
+            throw new MisconfiguredDecidersException("Saw " + deciders.size() + " expected " + expected);
+        }
+    }
+
+    public abstract boolean decide(FlowContext context);
 }

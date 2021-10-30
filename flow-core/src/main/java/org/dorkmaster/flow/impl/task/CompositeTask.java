@@ -1,9 +1,9 @@
 package org.dorkmaster.flow.impl.task;
 
+import org.dorkmaster.flow.Composite;
+import org.dorkmaster.flow.FlowContext;
+import org.dorkmaster.flow.Task;
 import org.dorkmaster.flow.exception.NoTasksException;
-import org.dorkmaster.flow.impl.Composite;
-import org.dorkmaster.flow.impl.FlowContext;
-import org.dorkmaster.flow.impl.Task;
 
 import java.util.LinkedList;
 import java.util.List;

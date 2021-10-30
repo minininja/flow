@@ -4,10 +4,10 @@ import org.dorkmaster.flow.exception.DuplicateFlowException
 import org.dorkmaster.flow.exception.FlowNotFoundException
 import org.dorkmaster.flow.exception.MalformedYamlException
 import org.dorkmaster.flow.exception.ResourceNotFoundException
-import org.dorkmaster.flow.impl.Composite
-import org.dorkmaster.flow.impl.Decider
-import org.dorkmaster.flow.impl.Flow
-import org.dorkmaster.flow.impl.Task
+import org.dorkmaster.flow.Composite
+import org.dorkmaster.flow.Decider
+import org.dorkmaster.flow.Flow
+import org.dorkmaster.flow.Task
 import org.dorkmaster.flow.impl.task.CompositeTask
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory

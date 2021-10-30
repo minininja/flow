@@ -1,6 +1,6 @@
 package org.dorkmaster.flow.test.flow;
 
-import org.dorkmaster.flow.impl.FlowContext;
+import org.dorkmaster.flow.impl.MapFlowContext;
 import org.dorkmaster.flow.impl.flow.SimpleFlow;
 import org.dorkmaster.flow.test.util.Deciders;
 import org.dorkmaster.flow.test.util.Tasks;
@@ -13,7 +13,7 @@ public class SimpleFlowTests {
 
     @Test
     public void testExecuted() {
-        FlowContext ctx = new FlowContext();
+        MapFlowContext ctx = new MapFlowContext();
 
         new SimpleFlow()
                 .setDecider(Deciders.t)
@@ -25,7 +25,7 @@ public class SimpleFlowTests {
 
     @Test
     public void testNotExecuted() {
-        FlowContext ctx = new FlowContext();
+        MapFlowContext ctx = new MapFlowContext();
 
         new SimpleFlow()
                 .setDecider(Deciders.f)

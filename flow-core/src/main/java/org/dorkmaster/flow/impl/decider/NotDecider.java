@@ -1,9 +1,8 @@
 package org.dorkmaster.flow.impl.decider;
 
+import org.dorkmaster.flow.Decider;
+import org.dorkmaster.flow.FlowContext;
 import org.dorkmaster.flow.exception.ConfigurationException;
-import org.dorkmaster.flow.exception.NoDecidersException;
-import org.dorkmaster.flow.impl.Decider;
-import org.dorkmaster.flow.impl.FlowContext;
 
 public class NotDecider extends CompositeDecider implements Decider {
 
@@ -18,10 +17,7 @@ public class NotDecider extends CompositeDecider implements Decider {
 
     @Override
     public boolean decide(FlowContext context) {
-        if (0 == deciders.size()) {
-            throw new NoDecidersException();
-        }
-
+        validate(1);
         return !deciders.get(0).decide(context);
     }
 }

@@ -1,9 +1,9 @@
 package org.dorkmaster.flow.impl.flow;
 
-import org.dorkmaster.flow.impl.Decider;
-import org.dorkmaster.flow.impl.Flow;
-import org.dorkmaster.flow.impl.FlowContext;
-import org.dorkmaster.flow.impl.Task;
+import org.dorkmaster.flow.Decider;
+import org.dorkmaster.flow.Flow;
+import org.dorkmaster.flow.FlowContext;
+import org.dorkmaster.flow.Task;
 
 public class SimpleFlow implements Flow {
     protected Decider decider;

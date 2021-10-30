@@ -1,7 +1,7 @@
 package org.dorkmaster.flow.test.util;
 
-import org.dorkmaster.flow.impl.Decider;
-import org.dorkmaster.flow.impl.FlowContext;
+import org.dorkmaster.flow.Decider;
+import org.dorkmaster.flow.FlowContext;
 
 public class TrueDecider implements Decider {
     @Override

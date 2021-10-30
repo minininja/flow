@@ -1,6 +1,6 @@
 package org.dorkmaster.flow.factory;
 
-import org.dorkmaster.flow.impl.Flow;
+import org.dorkmaster.flow.Flow;
 
 public interface FlowFactory {
 

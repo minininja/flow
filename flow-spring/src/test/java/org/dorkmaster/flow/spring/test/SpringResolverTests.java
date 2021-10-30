@@ -1,8 +1,9 @@
 package org.dorkmaster.flow.spring.test;
 
+import org.dorkmaster.flow.Flow;
+import org.dorkmaster.flow.FlowContext;
 import org.dorkmaster.flow.exception.DuplicateClassException;
-import org.dorkmaster.flow.impl.Flow;
-import org.dorkmaster.flow.impl.FlowContext;
+import org.dorkmaster.flow.impl.MapFlowContext;
 import org.dorkmaster.flow.spring.factory.SpringFlowFactory;
 import org.dorkmaster.flow.spring.test.util.SpringMarkerTask;
 import org.junit.Assert;
@@ -32,7 +33,7 @@ public class SpringResolverTests implements InitializingBean {
     @Test
     public void testFlow() {
         Flow flow = springFlowFactory.constructFlow("springFlow");
-        FlowContext fc = flow.execute(new FlowContext());
+        FlowContext fc = flow.execute(new MapFlowContext());
         Assert.assertNotNull(fc);
         Assert.assertEquals(SpringMarkerTask.MARKER, fc.get(SpringMarkerTask.MARKER));
     }
@@ -40,7 +41,7 @@ public class SpringResolverTests implements InitializingBean {
     @Test
     public void testFlowWithNonSpring() {
         Flow flow = springFlowFactory.constructFlow("springFlow2");
-        FlowContext fc = flow.execute(new FlowContext());
+        FlowContext fc = flow.execute(new MapFlowContext());
         Assert.assertNotNull(fc);
         Assert.assertEquals(SpringMarkerTask.MARKER, fc.get(SpringMarkerTask.MARKER));
     }

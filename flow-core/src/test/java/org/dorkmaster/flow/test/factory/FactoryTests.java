@@ -1,9 +1,10 @@
 package org.dorkmaster.flow.test.factory;
 
+import org.dorkmaster.flow.Flow;
+import org.dorkmaster.flow.FlowContext;
 import org.dorkmaster.flow.factory.FlowFactory;
 import org.dorkmaster.flow.factory.StandAloneFactory;
-import org.dorkmaster.flow.impl.Flow;
-import org.dorkmaster.flow.impl.FlowContext;
+import org.dorkmaster.flow.impl.MapFlowContext;
 import org.dorkmaster.flow.test.util.MarkerTask;
 import org.dorkmaster.flow.test.util.MarkerTask2;
 import org.junit.Assert;
@@ -18,7 +19,7 @@ public class FactoryTests {
         Flow flow = factory.constructFlow("trivial");
         Assert.assertNotNull(flow);
 
-        FlowContext result = flow.execute(new FlowContext());
+        FlowContext result = flow.execute(new MapFlowContext());
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.get(MarkerTask.MARKER));
     }
@@ -28,7 +29,7 @@ public class FactoryTests {
         Flow flow = factory.constructFlow("notTrivial");
         Assert.assertNotNull(flow);
 
-        FlowContext result = flow.execute(new FlowContext());
+        FlowContext result = flow.execute(new MapFlowContext());
         Assert.assertNotNull(result);
         Assert.assertNull(result.get(MarkerTask.MARKER));
     }
@@ -38,7 +39,7 @@ public class FactoryTests {
         Flow flow = factory.constructFlow("compositeFlowTask");
         Assert.assertNotNull(flow);
 
-        FlowContext result = flow.execute(new FlowContext());
+        FlowContext result = flow.execute(new MapFlowContext());
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.get(MarkerTask.MARKER));
         Assert.assertNull(result.get(MarkerTask2.MARKER));
